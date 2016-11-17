@@ -32,12 +32,13 @@ char *fakeargv[] = { fakeParam, NULL };
 int fakeargc = 1;
 
 typedef struct {
-  GLfloat r, g, b;  // The colour of the particle
-  GLfloat scale;    // The scale of the particle
-  GLfloat x, y, z;  // The position of the particle
-  GLfloat speed;    // The speed the particle can move at
-  GLfloat weight;   // The weight used for physics
-  GLfloat lifetime; // The lifetime for the point (0 for infinite)
+  GLfloat initialX, initialY, initialZ;
+  GLfloat directionX, directionY, directionZ;
+  GLfloat r, g, b;
+  GLfloat scale;
+  GLfloat weight;
+  GLint lifetime;
+  GLint type; // 0 - point, 1 - line, 2 - voxel, 3 - image
 } particle;
 
 ///////////////////////////////////////////////
