@@ -34,9 +34,17 @@ using namespace std;
 | vector, which defines the worldspace.
 */
 
+#define MAX_PARTICLES 10
+#define DEG_TO_RAD    0.017453293
+#define CAMERA_SPEED  10
+#define TURN_ANGLE    4.0
+
 GLuint axisList;
+GLint width= 800, height= 600; // Size of initial screen
+
 int AXIS_SIZE= 200;
 int axisEnabled= 1;
+int numParticles = 0;
 
 // Trick GLUT into thinking we're working in C, not C++
 char fakeParam[] = "fake";
@@ -49,7 +57,7 @@ typedef struct {
   GLfloat r, g, b;
   GLfloat scale;
   GLfloat weight;
-  GLint lifetime;
+  GLint lifetime; // -1 for infinite
   GLint type; // 0 - point, 1 - line, 2 - voxel, 3 - image
 } particle;
 
@@ -68,12 +76,6 @@ double myRandom()
 | Define what we're going to do, if someone hits a button, or the size of
 | the window changes
 */
-
-void keyboard(unsigned char key, int x, int y)
-{
-  if(key == 27) exit(0);
-  glutPostRedisplay();
-}
 
 void reshape(int width, int height)
 {
@@ -111,6 +113,179 @@ void makeAxes() {
       glVertex3f(0.0, 0.0, AXIS_SIZE);
     glEnd();
   glEndList();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Update Particle Existance
+|--------------------------------------------------------------------------
+|
+| We start off by creating new particles, giving them some porperties, and
+| then we add them to the worldspace.
+|
+| Likewise, there are some particles which have either expired their
+| lifetime, or do not contribute to the scene (left the view and not
+| returning) or are too faint to detect.
+*/
+
+void fireworkGeneration(){
+
+  if(numParticles > MAX_PARTICLES) {
+    return;
+  }
+
+  particle myParticle = {
+    20.0, 1.0, 10.0,
+    0.0, 0.01, 0.01,
+    255.0, 0.0, 0.0,
+    1,
+    1,
+    1000,
+    1
+  };
+
+  particleSet.push_back(myParticle);
+
+  numParticles++;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Update Particle Dynamics
+|--------------------------------------------------------------------------
+|
+| We then model the particles based on which model they're currently
+| simulating. I've decided to implement three very different examples:
+|
+| 1. Fireworks
+| 2. Strange attactors
+| 3. A black hole
+*/
+
+void fireworkDynamics(){
+  glBegin(GL_POINTS);
+
+  for(unsigned int i = 0; i < particleSet.size(); i++) {
+    particleSet[i].initialX += particleSet[i].directionX;
+    particleSet[i].initialY += particleSet[i].directionY;
+    particleSet[i].initialZ += particleSet[i].directionZ;
+
+    glVertex3f(particleSet[i].initialX,
+               particleSet[i].initialY,
+               particleSet[i].initialZ);
+  }
+
+  glEnd();
+}
+
+void strangeProcess(){
+
+}
+
+void blackHoleProcess(){
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| Create the camera controls
+|--------------------------------------------------------------------------
+|
+| Being able to see around the scene is essential for being able to both
+| admire and debug the scene, when things go wrong.
+*/
+
+GLdouble lat, lon;                  /* View angles (degrees) */
+GLdouble mouseLat, mouseLon;        /* Mouse look offset angles */
+GLfloat  eyeX, eyeY, eyeZ;          /* Eye point */
+GLfloat  centerX, centerY, centerZ; /* Look point */
+GLfloat  upX, upY, upZ;             /* View up vector */
+
+void initCamera(){
+  eyeX = 250;
+  eyeY = 100;
+  eyeZ = 250;
+
+  upX = 0.0;
+  upY = 1.0;
+  upZ = 0.0;
+
+  lat = 1.71;
+  lon = -138.1;
+
+  mouseLat = 0.0;
+  mouseLon = 0.0;
+}
+
+void calculateLookpoint() {
+  GLfloat dirX = cos(lat * DEG_TO_RAD) * sin(lon * DEG_TO_RAD);
+  GLfloat dirY = sin(lat * DEG_TO_RAD);
+  GLfloat dirZ = cos(lat * DEG_TO_RAD) * cos(lon * DEG_TO_RAD);
+  centerX = eyeX + dirX;
+  centerY = eyeY + dirY;
+  centerZ = eyeZ + dirZ;
+}
+
+void mouseMotion(int x, int y) {
+  if(lat > 89){
+    lat = lat - 10;
+  }
+  if(lat < -89){
+    lat = lat + 10;
+  }
+  lon += (-(((double)x / ((double)width / 100)) - 50))/50;
+  lat += (-(((double)y / ((double)height / 100)) - 50))/50;
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+  if(key == 27) exit(0);
+  switch (key) {
+    case 119:
+      eyeX += CAMERA_SPEED * sin(DEG_TO_RAD * lon);
+      eyeZ += CAMERA_SPEED * cos(DEG_TO_RAD * lon);
+      break;
+    case 115:
+        eyeX += -CAMERA_SPEED * sin(DEG_TO_RAD * lon);
+        eyeZ += -CAMERA_SPEED * cos(DEG_TO_RAD * lon);
+        break;
+    case 97:
+        eyeX += CAMERA_SPEED * sin((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
+        eyeZ += CAMERA_SPEED * cos((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
+        break;
+    case 100:
+        eyeX += -CAMERA_SPEED * sin((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
+        eyeZ += -CAMERA_SPEED * cos((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
+        break;
+    }
+}
+
+void display(){
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
+  gluLookAt(eyeX, eyeY, eyeZ,
+            centerX, centerY, centerZ,
+            upX, upY, upZ);
+  if(axisEnabled) glCallList(axisList);
+  calculateLookpoint();
+  glutSwapBuffers();
+}
+
+/*
+|--------------------------------------------------------------------------
+| Run the loop
+|--------------------------------------------------------------------------
+|
+| Here we define the loop which will be the workhorse behind the process.
+| We need to make sure that the view is set, the lookpoint is where it
+| should be, and that the buffers are cleared.
+*/
+
+void animate(){
+  fireworkGeneration();
+  fireworkDynamics();
+  glutPostRedisplay();
 }
 
 /*
@@ -158,27 +333,6 @@ void initMenus(){
 
 /*
 |--------------------------------------------------------------------------
-| Run the loop
-|--------------------------------------------------------------------------
-|
-| Here we define the loop which will be the workhorse behind the process.
-| We need to make sure that the view is set, the lookpoint is where it
-| should be, and that the buffers are cleared.
-*/
-
-void display(){
-  glLoadIdentity();
-  gluLookAt(0.0, 100.0, 1000.0,
-            0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if(axisEnabled) glCallList(axisList);
-  glutSwapBuffers();
-}
-
-
-/*
-|--------------------------------------------------------------------------
 | Initialise the application
 |--------------------------------------------------------------------------
 |
@@ -192,17 +346,29 @@ void initGraphics() {
   glutInitWindowPosition(100, 100);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutCreateWindow("COMP37111 Particles");
+
   initMenus();
+
   glutDisplayFunc(display);
-  glutKeyboardFunc(keyboard);
   glutReshapeFunc(reshape);
+  glutKeyboardFunc(keyboard);
+
+  glutIdleFunc(animate);
+
+  initCamera();
+
+  glutPassiveMotionFunc (mouseMotion);
+
+  glEnable(GL_POINT_SMOOTH);
+
   makeAxes();
 }
 
 int main()
 {
-  srand(time(NULL));
+  // srand(time(NULL));
   initGraphics();
-  glEnable(GL_POINT_SMOOTH);
   glutMainLoop();
+
+  return 0;
 }
