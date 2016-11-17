@@ -34,7 +34,7 @@ using namespace std;
 | vector, which defines the worldspace.
 */
 
-#define MAX_PARTICLES 10
+#define MAX_PARTICLES 100
 #define DEG_TO_RAD    0.017453293
 #define CAMERA_SPEED  10
 #define TURN_ANGLE    4.0
@@ -55,8 +55,10 @@ typedef struct {
   GLfloat initialX, initialY, initialZ;
   GLfloat directionX, directionY, directionZ;
   GLfloat r, g, b;
+  GLfloat opacity;
   GLfloat scale;
   GLfloat weight;
+  GLint maxLifetime;
   GLint lifetime; // -1 for infinite
   GLint type; // 0 - point, 1 - line, 2 - voxel, 3 - image
 } particle;
@@ -131,23 +133,34 @@ void makeAxes() {
 
 void fireworkGeneration(){
 
-  if(numParticles > MAX_PARTICLES) {
-    return;
+  for(unsigned int i = 0; i < particleSet.size(); i++) {
+      if(particleSet[i].lifetime == 0) {
+        particleSet.erase(particleSet.begin() + i); // Not efficent, causes a shuffle!
+        numParticles--;
+      } else {
+        particleSet[i].opacity =
+            (particleSet[i].lifetime / particleSet[i].maxLifetime);
+        particleSet[i].lifetime--;
+      }
+
   }
 
-  particle myParticle = {
-    20.0, 1.0, 10.0,
-    0.0, 0.01, 0.01,
-    255.0, 0.0, 0.0,
-    1,
-    1,
-    1000,
-    1
-  };
+  if(numParticles < MAX_PARTICLES) {
+    particle newParticle = {
+      10.0, 10.0, 10.0,
+      0.0, 0.01, 0.01,
+      255.0, 255.0, 0.0,
+      0.0,
+      1,
+      1,
+      (int)(myRandom() * 1000),
+      (int)(myRandom() * 1000),
+      1
+    };
+    particleSet.push_back(newParticle);
+    numParticles++;
+  }
 
-  particleSet.push_back(myParticle);
-
-  numParticles++;
 }
 
 /*
@@ -167,16 +180,20 @@ void fireworkDynamics(){
   glBegin(GL_POINTS);
 
   for(unsigned int i = 0; i < particleSet.size(); i++) {
-    particleSet[i].initialX += particleSet[i].directionX;
-    particleSet[i].initialY += particleSet[i].directionY;
-    particleSet[i].initialZ += particleSet[i].directionZ;
+    particleSet[i].initialX += (myRandom() - 0.5) * 5;
+    particleSet[i].initialY += (myRandom() - 0.5) * 5;
+    particleSet[i].initialZ += (myRandom() - 0.5) * 5;
 
+    glColor4f(particleSet[i].r, particleSet[i].g, particleSet[i].b,
+      particleSet[i].opacity);
     glVertex3f(particleSet[i].initialX,
                particleSet[i].initialY,
                particleSet[i].initialZ);
-  }
 
+
+  }
   glEnd();
+
 }
 
 void strangeProcess(){
@@ -275,7 +292,7 @@ void display(){
             centerX, centerY, centerZ,
             upX, upY, upZ);
   if(axisEnabled) glCallList(axisList);
-  glutSwapBuffers();
+
 }
 
 /*
@@ -291,6 +308,7 @@ void display(){
 void animate(){
   fireworkGeneration();
   fireworkDynamics();
+  glutSwapBuffers();
   glutPostRedisplay();
 }
 
@@ -360,6 +378,7 @@ void initGraphics() {
   glutKeyboardFunc(keyboard);
 
   glutIdleFunc(animate);
+  glPointSize(3);
 
   initCamera();
 
