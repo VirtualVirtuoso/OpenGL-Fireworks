@@ -138,8 +138,7 @@ void fireworkGeneration(){
         particleSet.erase(particleSet.begin() + i); // Not efficent, causes a shuffle!
         numParticles--;
       } else {
-        particleSet[i].opacity =
-            (particleSet[i].lifetime / particleSet[i].maxLifetime);
+        particleSet[i].opacity = (particleSet[i].lifetime / particleSet[i].maxLifetime);
         particleSet[i].lifetime--;
       }
 
@@ -370,6 +369,9 @@ void initGraphics() {
   glutInitWindowPosition(100, 100);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutCreateWindow("COMP37111 Particles");
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   initMenus();
 
