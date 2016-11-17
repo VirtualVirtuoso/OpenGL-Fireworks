@@ -146,6 +146,7 @@ void initGraphics() {
   glutInitWindowPosition(100, 100);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutCreateWindow("COMP37111 Particles");
+  initMenus();
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
   glutReshapeFunc(reshape);

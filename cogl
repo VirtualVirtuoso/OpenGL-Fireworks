@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# NOTE: Specific to the OpenGL installation in the School of Computer Science
+# at The University of Manchester
+#
+# Authors: Karl Sutt and Toby Howard
+# Last edited: 2 Jan 2013
+# License: GPLv2
+
+# Prints the usage message
+function usage
+{
+echo " Usage: cogl myOpenGLProgram.c [outfile]"
+echo " If you omit \"outfile\" then the output will be \"myOpenGLProgram\""
+}
+
+# INFILE is the source file. OUTFILE is the target file.
+INFILE=$1
+OUTFILE=${INFILE%.*} # strip off . and following characters.
+
+# If we have no arguments, then print usage message and exit
+if [ $# -eq 0 ]; then
+   usage
+   exit 1
+else
+   if [ "$2" != "" ]; then # If the second argument is provided, then use that
+      OUTFILE=$2
+   fi
+   echo "  cogl: compiling \"$INFILE\", output will be \"$OUTFILE\""
+   gcc -fomit-frame-pointer -Wall \
+       -pipe -DFX -DXMESA -lGL -lGLU -lglut -lX11 -lm -L/usr/lib64 -lstdc++ -g -o $OUTFILE $INFILE
+   exit
+fi
