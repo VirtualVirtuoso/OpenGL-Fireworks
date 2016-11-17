@@ -242,21 +242,27 @@ void keyboard(unsigned char key, int x, int y)
 {
   if(key == 27) exit(0);
   switch (key) {
-    case 119:
+    case 119: // W
       eyeX += CAMERA_SPEED * sin(DEG_TO_RAD * lon);
       eyeZ += CAMERA_SPEED * cos(DEG_TO_RAD * lon);
       break;
-    case 115:
+    case 115: // S
         eyeX += -CAMERA_SPEED * sin(DEG_TO_RAD * lon);
         eyeZ += -CAMERA_SPEED * cos(DEG_TO_RAD * lon);
         break;
-    case 97:
+    case 97: // A
         eyeX += CAMERA_SPEED * sin((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
         eyeZ += CAMERA_SPEED * cos((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
         break;
-    case 100:
+    case 100: // D
         eyeX += -CAMERA_SPEED * sin((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
         eyeZ += -CAMERA_SPEED * cos((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
+        break;
+    case 113: // Q
+        eyeY += CAMERA_SPEED;
+        break;
+    case 101: // E
+        eyeY += -CAMERA_SPEED;
         break;
     }
 }
@@ -264,11 +270,11 @@ void keyboard(unsigned char key, int x, int y)
 void display(){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
+  calculateLookpoint();
   gluLookAt(eyeX, eyeY, eyeZ,
             centerX, centerY, centerZ,
             upX, upY, upZ);
   if(axisEnabled) glCallList(axisList);
-  calculateLookpoint();
   glutSwapBuffers();
 }
 
