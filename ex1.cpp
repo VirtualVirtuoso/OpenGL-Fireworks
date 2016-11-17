@@ -45,6 +45,7 @@ GLint width= 800, height= 600; // Size of initial screen
 int AXIS_SIZE= 200;
 int axisEnabled= 1;
 int numParticles = 0;
+int mode = 0; // 0 -- bees, 1 -- fireworks, 2 --
 
 // Trick GLUT into thinking we're working in C, not C++
 char fakeParam[] = "fake";
@@ -65,8 +66,15 @@ typedef struct {
 
 vector<particle> particleSet;
 
-double myRandom()
-{
+/*
+|--------------------------------------------------------------------------
+| Utility Methods
+|--------------------------------------------------------------------------
+|
+| Here we some reusable functions which don't really fit anywhere else
+*/
+
+double myRandom() {
   return (rand()/(double)RAND_MAX);
 }
 
@@ -79,8 +87,7 @@ double myRandom()
 | the window changes
 */
 
-void reshape(int width, int height)
-{
+void reshape(int width, int height) {
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glViewport(0, 0, (GLsizei)width, (GLsizei)height);
   glMatrixMode(GL_PROJECTION);
@@ -131,7 +138,7 @@ void makeAxes() {
 | returning) or are too faint to detect.
 */
 
-void fireworkGeneration(){
+void fireworkGeneration() {
 
   for(unsigned int i = 0; i < particleSet.size(); i++) {
       if(particleSet[i].lifetime == 0) {
@@ -175,7 +182,7 @@ void fireworkGeneration(){
 | 3. A black hole
 */
 
-void fireworkDynamics(){
+void fireworkDynamics() {
   glBegin(GL_POINTS);
 
   for(unsigned int i = 0; i < particleSet.size(); i++) {
@@ -195,11 +202,11 @@ void fireworkDynamics(){
 
 }
 
-void strangeProcess(){
+void strangeProcess() {
 
 }
 
-void blackHoleProcess(){
+void blackHoleProcess() {
 
 }
 
@@ -218,7 +225,7 @@ GLfloat  eyeX, eyeY, eyeZ;          /* Eye point */
 GLfloat  centerX, centerY, centerZ; /* Look point */
 GLfloat  upX, upY, upZ;             /* View up vector */
 
-void initCamera(){
+void initCamera() {
   eyeX = 250;
   eyeY = 100;
   eyeZ = 250;
@@ -254,8 +261,7 @@ void mouseMotion(int x, int y) {
   lat += (-(((double)y / ((double)height / 100)) - 50))/50;
 }
 
-void keyboard(unsigned char key, int x, int y)
-{
+void keyboard(unsigned char key, int x, int y) {
   if(key == 27) exit(0);
   switch (key) {
     case 119: // W
@@ -283,7 +289,7 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
-void display(){
+void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
   calculateLookpoint();
@@ -304,9 +310,11 @@ void display(){
 | should be, and that the buffers are cleared.
 */
 
-void animate(){
-  fireworkGeneration();
-  fireworkDynamics();
+void animate() {
+  if(mode == 1) {
+    fireworkGeneration();
+    fireworkDynamics();
+  }
   glutSwapBuffers();
   glutPostRedisplay();
 }
@@ -326,12 +334,30 @@ void animate(){
 void menu(int menuEntry) {
   switch(menuEntry) {
     case 1:
-      cout << "Menu entry 1 clicked..." << endl;
+      cout << "BEES!..." << endl;
+      mode = 1;
+      particleSet.clear();
+      numParticles = 0;
       break;
     case 2:
-      cout << "Menu entry 2 clicked..." << endl;
+      cout << "Fireworks..." << endl;
+      mode = 2;
+      particleSet.clear();
+      numParticles = 0;
       break;
     case 3:
+      cout << "Strangeness..." << endl;
+      mode = 3;
+      particleSet.clear();
+      numParticles = 0;
+      break;
+    case 4:
+      cout << "Holes..." << endl;
+      mode = 4;
+      particleSet.clear();
+      numParticles = 0;
+      break;
+    case 10:
       cout << "Exiting the program..." << endl;
       exit(0);
     default:
@@ -339,15 +365,17 @@ void menu(int menuEntry) {
   }
 }
 
-void initMenus(){
+void initMenus() {
   glClearColor(0.0, 0.0, 0.0, 0.0);
 
   glutCreateMenu(menu);
 
-  glutAddMenuEntry("Option 1", 1);
-  glutAddMenuEntry("Option 2", 2);
+  glutAddMenuEntry("Bees", 1);
+  glutAddMenuEntry("Fireworks", 2);
+  glutAddMenuEntry("Attractors", 3);
+  glutAddMenuEntry("Blackhold", 4);
   glutAddMenuEntry("", 999);
-  glutAddMenuEntry("Quit", 3);
+  glutAddMenuEntry("Quit", 10);
 
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 
@@ -391,8 +419,7 @@ void initGraphics() {
   makeAxes();
 }
 
-int main()
-{
+int main() {
   // srand(time(NULL));
   initGraphics();
   glutMainLoop();
