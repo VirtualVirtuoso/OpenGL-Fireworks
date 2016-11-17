@@ -11,11 +11,14 @@
 //
 /////////////////////////////////////////////////////////////////
 
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include <GL/glut.h>
+
+using namespace std;
 
 // Display list for coordinate axis
 GLuint axisList;
@@ -27,6 +30,15 @@ int axisEnabled= 1;
 char fakeParam[] = "fake";
 char *fakeargv[] = { fakeParam, NULL };
 int fakeargc = 1;
+
+typedef struct {
+  GLfloat r, g, b;  // The colour of the particle
+  GLfloat scale;    // The scale of the particle
+  GLfloat x, y, z;  // The position of the particle
+  GLfloat speed;    // The speed the particle can move at
+  GLfloat weight;   // The weight used for physics
+  GLfloat lifetime; // The lifetime for the point (0 for infinite)
+} particle;
 
 ///////////////////////////////////////////////
 
@@ -94,8 +106,41 @@ void makeAxes() {
 }
 
 ///////////////////////////////////////////////
-void initGraphics()
-{
+
+void menu(int menuEntry) {
+  switch(menuEntry) {
+    case 1:
+      cout << "Menu entry 1 clicked..." << endl;
+      break;
+    case 2:
+      cout << "Menu entry 2 clicked..." << endl;
+      break;
+    case 3:
+      cout << "Exiting the program..." << endl;
+      exit(0);
+    default:
+      break;
+  }
+}
+
+void initMenus(){
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+
+  glutCreateMenu(menu);
+
+  glutAddMenuEntry("Option 1", 1);
+  glutAddMenuEntry("Option 2", 2);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("Quit", 3);
+
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+  glEnable(GL_DEPTH_TEST);
+}
+
+///////////////////////////////////////////////
+
+void initGraphics() {
   glutInit(&fakeargc, fakeargv);
   glutInitWindowSize(800, 600);
   glutInitWindowPosition(100, 100);
