@@ -1,17 +1,21 @@
-////////////////////////////////////////////////////////////////
-// School of Computer Science
-// The University of Manchester
-//
-// This code is licensed under the terms of the Creative Commons
-// Attribution 2.0 Generic (CC BY 3.0) License.
-//
-// Skeleton code for COMP37111 coursework, 2013-14
-//
-// Authors: Arturs Bekasovs and Toby Howard
-//
-/////////////////////////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| Strange Attractions
+|--------------------------------------------------------------------------
+|
+| School of Computer Science
+| The University of Manchester
+|
+| This code is licensed under the terms of the Creative Commons
+| Attribution 2.0 Generic (CC BY 3.0) License.
+|
+| Skeleton code for COMP37111 coursework, 2013-14
+|
+| Authors: Struan McDonough, Arturs Bekasovs, Toby Howard
+*/
 
 #include <iostream>
+#include <vector>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -20,9 +24,17 @@
 
 using namespace std;
 
-// Display list for coordinate axis
-GLuint axisList;
+/*
+|--------------------------------------------------------------------------
+| Define the globals
+|--------------------------------------------------------------------------
+|
+| Here, we define variables which will be shared by the entire application.
+| The most important parts here are the particle struct and the particle
+| vector, which defines the worldspace.
+*/
 
+GLuint axisList;
 int AXIS_SIZE= 200;
 int axisEnabled= 1;
 
@@ -41,31 +53,21 @@ typedef struct {
   GLint type; // 0 - point, 1 - line, 2 - voxel, 3 - image
 } particle;
 
-///////////////////////////////////////////////
+vector<particle> particleSet;
 
 double myRandom()
-//Return random double within range [0,1]
 {
   return (rand()/(double)RAND_MAX);
 }
 
-///////////////////////////////////////////////
-
-void display()
-{
-  glLoadIdentity();
-  gluLookAt(0.0, 100.0, 1000.0,
-            0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0);
-  // Clear the screen
-  glClear(GL_COLOR_BUFFER_BIT);
-  // If enabled, draw coordinate axis
-  if(axisEnabled) glCallList(axisList);
-
-  glutSwapBuffers();
-}
-
-///////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| Handle global events
+|--------------------------------------------------------------------------
+|
+| Define what we're going to do, if someone hits a button, or the size of
+| the window changes
+*/
 
 void keyboard(unsigned char key, int x, int y)
 {
@@ -73,11 +75,9 @@ void keyboard(unsigned char key, int x, int y)
   glutPostRedisplay();
 }
 
-///////////////////////////////////////////////
-
 void reshape(int width, int height)
 {
-  glClearColor(0.9, 0.9, 0.9, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
   glViewport(0, 0, (GLsizei)width, (GLsizei)height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -85,7 +85,14 @@ void reshape(int width, int height)
   glMatrixMode(GL_MODELVIEW);
 }
 
-///////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| Create the axes
+|--------------------------------------------------------------------------
+|
+| This comes out of the box with the demo provided for this exercise. It
+| simply creates some axis to show that the application has been working
+*/
 
 void makeAxes() {
 // Create a display list for drawing coord axis
@@ -106,7 +113,17 @@ void makeAxes() {
   glEndList();
 }
 
-///////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| Create the menus
+|--------------------------------------------------------------------------
+|
+| Here, we have two functions. The first of which defines the actions
+| associated with the actions for each button index.
+|
+| The second actually defines the menu, and the buttons which should
+| appear
+*/
 
 void menu(int menuEntry) {
   switch(menuEntry) {
@@ -139,7 +156,35 @@ void initMenus(){
   glEnable(GL_DEPTH_TEST);
 }
 
-///////////////////////////////////////////////
+/*
+|--------------------------------------------------------------------------
+| Run the loop
+|--------------------------------------------------------------------------
+|
+| Here we define the loop which will be the workhorse behind the process.
+| We need to make sure that the view is set, the lookpoint is where it
+| should be, and that the buffers are cleared.
+*/
+
+void display(){
+  glLoadIdentity();
+  gluLookAt(0.0, 100.0, 1000.0,
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if(axisEnabled) glCallList(axisList);
+  glutSwapBuffers();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Initialise the application
+|--------------------------------------------------------------------------
+|
+| These are the GLUT calls which are required to setup a basic scene, and
+| will also setup the scene, before we run the main loop
+*/
 
 void initGraphics() {
   glutInit(&fakeargc, fakeargv);
@@ -153,8 +198,6 @@ void initGraphics() {
   glutReshapeFunc(reshape);
   makeAxes();
 }
-
-/////////////////////////////////////////////////
 
 int main()
 {
