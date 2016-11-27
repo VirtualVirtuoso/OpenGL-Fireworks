@@ -139,6 +139,7 @@ void makeAxes() {
 */
 
 #include "generation/bee.cpp"
+#include "generation/fireworks.cpp"
 
 /*
 |--------------------------------------------------------------------------
@@ -154,6 +155,7 @@ void makeAxes() {
 */
 
 #include "dynamics/bee.cpp"
+#include "dynamics/fireworks.cpp"
 
 void strangeProcess() {
 
@@ -174,9 +176,17 @@ void blackHoleProcess() {
 */
 
 void animate() {
-  if(mode == 1) {
-    beeGeneration();
-    beeDynamics();
+  switch(mode) {
+    case 1:
+      beeGeneration();
+      beeDynamics();
+      break;
+    case 2:
+      fireworkGeneration();
+      fireworkDynamics();
+      break;
+    default:
+      break;
   }
   glutSwapBuffers();
   glutPostRedisplay();
