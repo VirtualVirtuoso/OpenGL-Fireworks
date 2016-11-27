@@ -17,7 +17,12 @@ void beeGeneration() {
         particleSet.erase(particleSet.begin() + i); // Not efficent, causes a shuffle!
         numParticles--;
       } else {
-        particleSet[i].opacity = (particleSet[i].lifetime / particleSet[i].maxLifetime);
+        if(particleSet[i].maxLifetime > 0) {
+          particleSet[i].opacity = (particleSet[i].lifetime / particleSet[i].maxLifetime);
+        } else {
+          particleSet[i].opacity = 0;
+        }
+
         particleSet[i].lifetime--;
       }
 

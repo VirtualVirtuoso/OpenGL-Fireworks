@@ -10,33 +10,32 @@
 | 2. Strange attactors
 | 3. A black hole
 */
+void displayGrass() {
+  for(unsigned int i = 0; i < grassSet.size(); i++) {
+      glColor4ub(grassSet[i].r, grassSet[i].g, grassSet[i].b,
+        grassSet[i].opacity);
+      glVertex3f(grassSet[i].initialX,
+                 grassSet[i].initialY,
+                 grassSet[i].initialZ);
+  }
+}
 
-#define NUMBER_EMITTERS 20
+void displayEmitters() {
+  for(unsigned int i = 0; i < emitterSet.size(); i++) {
+      glColor4ub(emitterSet[i].r, emitterSet[i].g, emitterSet[i].b,
+                 emitterSet[i].opacity);
+      glVertex3f(emitterSet[i].initialX,
+                 emitterSet[i].initialY,
+                 emitterSet[i].initialZ);
+  }
+}
 
 void fireworkDynamics() {
   glBegin(GL_POINTS);
 
-  for(unsigned int i = 1; i < NUMBER_EMITTERS; i++) {
-      GLint x = 30 + (20 * cos(i));
-      GLint y = 20 + (20 * sin(i));
+    displayGrass();
+    displayEmitters();
 
-      glColor4f(255, 255, 255, 255);
-      glVertex3f(x, 0, y);
-  }
-
-  // for(unsigned int i = 0; i < particleSet.size(); i++) {
-  //   particleSet[i].initialX += (myRandom() - 0.5) * 5;
-  //   particleSet[i].initialY += (myRandom() - 0.5) * 5;
-  //   particleSet[i].initialZ += (myRandom() - 0.5) * 5;
-  //
-  //   glColor4f(particleSet[i].r, particleSet[i].g, particleSet[i].b,
-  //     particleSet[i].opacity);
-  //   glVertex3f(particleSet[i].initialX,
-  //              particleSet[i].initialY,
-  //              particleSet[i].initialZ);
-  //
-  //
-  // }
   glEnd();
 
 }

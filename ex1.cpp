@@ -124,6 +124,15 @@ void makeAxes() {
   glEndList();
 }
 
+/*
+|--------------------------------------------------------------------------
+| Initialise the scene
+|--------------------------------------------------------------------------
+|
+| Perform any one time calculations which shouldn't be executed at every
+| frame.
+*/
+#include "init/fireworks.cpp"
 
 /*
 |--------------------------------------------------------------------------
@@ -201,7 +210,7 @@ void animate() {
 | will also setup the scene, before we run the main loop
 */
 #include "util/controls.cpp"
-#include "util/init.cpp"
+#include "init/init.cpp"
 
 int main() {
 

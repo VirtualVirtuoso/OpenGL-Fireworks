@@ -14,7 +14,7 @@ void beeDynamics() {
   glBegin(GL_POINTS);
 
   for(unsigned int i = 0; i < particleSet.size(); i++) {
-    particleSet[i].initialX += (myRandom() - 0.5) * 5;
+    particleSet[i].initialX += ( - 0.5) * 5;
     particleSet[i].initialY += (myRandom() - 0.5) * 5;
     particleSet[i].initialZ += (myRandom() - 0.5) * 5;
 

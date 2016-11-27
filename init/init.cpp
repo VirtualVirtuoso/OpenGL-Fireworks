@@ -32,4 +32,5 @@ void initGraphics() {
   glEnable(GL_POINT_SMOOTH);
 
   makeAxes();
+  initFireworks();
 }

@@ -50,8 +50,9 @@ void mouseMotion(int x, int y) {
 }
 
 void keyboard(unsigned char key, int x, int y) {
-  if(key == 27) exit(0);
   switch (key) {
+    case 27: // ESC
+      exit(0);
     case 119: // W
       eyeX += CAMERA_SPEED * sin(DEG_TO_RAD * lon);
       eyeZ += CAMERA_SPEED * cos(DEG_TO_RAD * lon);
