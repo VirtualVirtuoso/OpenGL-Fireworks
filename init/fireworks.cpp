@@ -6,10 +6,9 @@
 | Perform any one time calculations which shouldn't be executed at every
 | frame.
 */
-#define NUMBER_EMITTERS 20
 
-vector<particle> grassSet;
-vector<particle> emitterSet;
+
+
 
 void initGrass(){
 

@@ -34,37 +34,8 @@ using namespace std;
 | vector, which defines the worldspace.
 */
 
-#define MAX_PARTICLES 100
-#define DEG_TO_RAD    0.017453293
-#define CAMERA_SPEED  10
-#define TURN_ANGLE    4.0
+#include "util/data.cpp"
 
-GLuint axisList;
-GLint width= 800, height= 600; // Size of initial screen
-
-int AXIS_SIZE= 200;
-int axisEnabled= 1;
-int numParticles = 0;
-int mode = 0; // 0 -- bees, 1 -- fireworks, 2 --
-
-// Trick GLUT into thinking we're working in C, not C++
-char fakeParam[] = "fake";
-char *fakeargv[] = { fakeParam, NULL };
-int fakeargc = 1;
-
-typedef struct {
-  GLfloat initialX, initialY, initialZ;
-  GLfloat directionX, directionY, directionZ;
-  GLfloat r, g, b;
-  GLfloat opacity;
-  GLfloat scale;
-  GLfloat weight;
-  GLint maxLifetime;
-  GLint lifetime; // -1 for infinite
-  GLint type; // 0 - point, 1 - line, 2 - voxel, 3 - image
-} particle;
-
-vector<particle> particleSet;
 
 /*
 |--------------------------------------------------------------------------

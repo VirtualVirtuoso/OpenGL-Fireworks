@@ -10,26 +10,6 @@
 | 2. Strange attactors
 | 3. A black hole
 */
-#define MAX_ROCKETS 10
-#define GRAVITATIONAL_CONSTANT 9.81
-#define PI 3.14159
-#define STEPS 20
-#define SCALE_FACTOR 4000
-
-vector<particle> rockets;
-vector<particle> explosions;
-
-int numRockets = 0;
-int minRocketLifetime = 500;
-int maxRocketLifetime = 1000;
-int fireworkRadius = 20;
-int explodeLifetime = 400;
-int rocketLaunchCone = 5;
-
-// Red, orange, yellow, green, blue, purple, pink
-int coloursRed[] = {219, 219, 219, 113, 15, 15, 103, 219};
-int coloursBlue[] = {69, 124, 192, 219, 219, 124, 15, 15};
-int coloursGreen[] = {15, 15, 15, 15, 171, 219, 219, 212};
 
 void displayGrass() {
   for(unsigned int i = 0; i < grassSet.size(); i++) {

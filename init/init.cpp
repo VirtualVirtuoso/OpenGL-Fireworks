@@ -8,7 +8,7 @@
 */
 void initGraphics() {
   glutInit(&fakeargc, fakeargv);
-  glutInitWindowSize(800, 600);
+  glutInitWindowSize(1200, 800);
   glutInitWindowPosition(100, 100);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutCreateWindow("COMP37111 Particles");
