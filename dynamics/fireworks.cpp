@@ -11,6 +11,10 @@
 | 3. A black hole
 */
 #define MAX_ROCKETS 10
+#define GRAVITATIONAL_CONSTANT 9.81
+#define PI 3.14159
+#define STEPS 20
+#define SCALE_FACTOR 4000
 
 vector<particle> rockets;
 vector<particle> explosions;
@@ -20,6 +24,12 @@ int minRocketLifetime = 500;
 int maxRocketLifetime = 1000;
 int fireworkRadius = 20;
 int explodeLifetime = 400;
+int rocketLaunchCone = 5;
+
+// Red, orange, yellow, green, blue, purple, pink
+int coloursRed[] = {219, 219, 219, 113, 15, 15, 103, 219};
+int coloursBlue[] = {69, 124, 192, 219, 219, 124, 15, 15};
+int coloursGreen[] = {15, 15, 15, 15, 171, 219, 219, 212};
 
 void displayGrass() {
   for(unsigned int i = 0; i < grassSet.size(); i++) {
@@ -66,9 +76,12 @@ void createFireworkStream() {
     particle emitter = emitterSet[emitterNum];
     GLint lifetime = getRocketLifetime();
 
+    GLfloat varianceX = (-rocketLaunchCone) + (rand() % (int)(rocketLaunchCone - (-rocketLaunchCone) + 1));
+    GLfloat varianceZ = (-rocketLaunchCone) + (rand() % (int)(rocketLaunchCone - (-rocketLaunchCone) + 1));
+
     particle newParticle = {
       emitter.initialX, emitter.initialY, emitter.initialZ,
-      0, 0.2, 0,
+      varianceX/200, 0.2, varianceZ/200,
       255.0, 255.0, 255.0,
       255.0,
       2.0,
@@ -84,26 +97,39 @@ void createFireworkStream() {
 }
 
 void createExplode(particle origin)  {
-  for(int i = 0; i < 20; i++) {
-    GLfloat xDirection = (((explodeLifetime + 1) /2) * cos(i)) / 20;
-    GLfloat zDirection = (((explodeLifetime + 1) /2) * sin(i)) / 20;
-    GLfloat x = origin.initialX;
-    GLfloat y = origin.initialY;
-    GLfloat z = origin.initialZ;
 
-    particle newParticle = {
-      x, y, z,
-      ((xDirection+1) / 100), 0, ((zDirection+1) /100),
-      255.0, 0, 255.0,
-      255.0,
-      2.0,
-      5.0,
-      explodeLifetime,
-      explodeLifetime,
-      0
-    };
+  int min = 0;
+  int max = (sizeof(coloursRed)/sizeof(*coloursRed)) - 1;
+  int random = min + (rand() % (int)(max - min + 1));
+  GLfloat red = (float)coloursRed[random];
+  GLfloat green = (float)coloursGreen[random];
+  GLfloat blue = (float)coloursBlue[random];
 
-    explosions.push_back(newParticle);
+  for(float theta = 0.0; theta < PI*2; theta += PI/STEPS) {
+
+    for(float omega = 0.0; omega < PI*2; omega += PI/STEPS) {
+      GLfloat x = origin.initialX;
+      GLfloat y = origin.initialY;
+      GLfloat z = origin.initialZ;
+      GLfloat xDirection = (((explodeLifetime + 1) /2) * cos(theta) * sin(omega)) / SCALE_FACTOR;
+      GLfloat yDirection = (((explodeLifetime + 1) /2) * sin(theta) * sin(omega)) / SCALE_FACTOR;
+      GLfloat zDirection = (((explodeLifetime + 1) /2) * cos(omega)) / SCALE_FACTOR;
+
+      particle newParticle = {
+        x, y, z,
+        xDirection, yDirection, zDirection,
+        red, green, blue,
+        255.0,
+        2.0,
+        5.0,
+        explodeLifetime,
+        explodeLifetime,
+        0
+      };
+
+      explosions.push_back(newParticle);
+    }
+
   }
 }
 
@@ -114,10 +140,18 @@ void drawExplode() {
       explosions.erase(explosions.begin() + i);
     } else {
       explosions[i].lifetime--;
+      explosions[i].directionY += -0.0002; // Simulate gravity
       explosions[i].initialX += explosions[i].directionX;
+      explosions[i].initialY += explosions[i].directionY;
       explosions[i].initialZ += explosions[i].directionZ;
 
-      glColor4ub(explosions[i].r, explosions[i].g, explosions[i].b,
+      if(explosions[i].maxLifetime == 0) {
+        explosions[i].maxLifetime = 1;
+      }
+
+      explosions[i].opacity = ((float)explosions[i].lifetime / (float)explosions[i].maxLifetime);
+
+      glColor4f(explosions[i].r/255, explosions[i].g/255, explosions[i].b/255,
         explosions[i].opacity);
       glVertex3f(explosions[i].initialX,
         explosions[i].initialY,
@@ -136,7 +170,9 @@ void drawFireworkStream() {
       rockets.erase(rockets.begin() + i);
       numRockets--;
     } else {
+      rockets[i].initialX += rockets[i].directionX;
       rockets[i].initialY += rockets[i].directionY;
+      rockets[i].initialZ += rockets[i].directionZ;
       rockets[i].lifetime--;
       glColor4ub(rockets[i].r, rockets[i].g, rockets[i].b,
         rockets[i].opacity);
