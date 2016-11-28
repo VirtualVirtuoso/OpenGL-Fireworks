@@ -104,28 +104,13 @@ void display() {
 void menu(int menuEntry) {
   switch(menuEntry) {
     case 1:
-      cout << "BEES!..." << endl;
-      mode = 1;
-      particleSet.clear();
-      numParticles = 0;
-      break;
-    case 2:
       cout << "Fireworks..." << endl;
       mode = 2;
       particleSet.clear();
       numParticles = 0;
       break;
-    case 3:
-      cout << "Strangeness..." << endl;
-      mode = 3;
-      particleSet.clear();
-      numParticles = 0;
-      break;
-    case 4:
-      cout << "Holes..." << endl;
-      mode = 4;
-      particleSet.clear();
-      numParticles = 0;
+    case 2:
+      cout << "Settings..." << endl;
       break;
     case 10:
       cout << "Exiting the program..." << endl;
@@ -135,19 +120,181 @@ void menu(int menuEntry) {
   }
 }
 
+void settingsMenuProcess(int menuEntry) {
+  switch(menuEntry) {
+    case 1:
+      cout << "Option 1" << endl;
+      break;
+    case 2:
+      cout << "Option 2" << endl;
+      break;
+    case 3:
+      cout << "Option 3" << endl;
+      break;
+    default:
+      break;
+  }
+}
+
+void explosionsMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << menuEntry << endl;
+}
+
+void fireworkMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << menuEntry << endl;
+}
+
+void emitterMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << menuEntry << endl;
+}
+
+void maxFireworkHeightMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << menuEntry << endl;
+}
+
+void minFireworkHeightMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << menuEntry << endl;
+}
+
+void explosionPressureMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << (float)menuEntry/100.0 << endl;
+}
+
+void gravityStengthMenuProcess(int menuEntry) {
+  if(menuEntry == 999) {
+    return;
+  }
+  cout << (float)menuEntry/100.0 << endl;
+}
+
+void initMainMenu() {
+
+  // For the explosion pressure
+  int gravityStengthMenu = glutCreateMenu(gravityStengthMenuProcess);
+  glutAddMenuEntry("== Gravity % == ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("10%", 10);
+  glutAddMenuEntry("20%", 20);
+  glutAddMenuEntry("50%", 50);
+  glutAddMenuEntry("100%", 100);
+  glutAddMenuEntry("150%", 150);
+  glutAddMenuEntry("200%", 200);
+  glutAddMenuEntry("500%", 500);
+
+  // For the explosion pressure
+  int explosionPressureMenu = glutCreateMenu(explosionPressureMenuProcess);
+  glutAddMenuEntry("== Explosion Pressure % == ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("10%", 10);
+  glutAddMenuEntry("20%", 20);
+  glutAddMenuEntry("50%", 50);
+  glutAddMenuEntry("100%", 100);
+  glutAddMenuEntry("150%", 150);
+  glutAddMenuEntry("200%", 200);
+  glutAddMenuEntry("500%", 500);
+
+  // For the max firework height
+  int maxFireworkHeightMenu = glutCreateMenu(maxFireworkHeightMenuProcess);
+  glutAddMenuEntry("== Max Firework Height == ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("200", 200);
+  glutAddMenuEntry("205", 205);
+  glutAddMenuEntry("210", 210);
+  glutAddMenuEntry("220", 220);
+  glutAddMenuEntry("300", 300);
+  glutAddMenuEntry("500", 500);
+  glutAddMenuEntry("1000", 1000);
+
+  // For the min firework height
+  int minFireworkHeightMenu = glutCreateMenu(minFireworkHeightMenuProcess);
+  glutAddMenuEntry("== Min Firework Height == ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("1", 1);
+  glutAddMenuEntry("5", 5);
+  glutAddMenuEntry("10", 10);
+  glutAddMenuEntry("20", 20);
+  glutAddMenuEntry("100", 100);
+  glutAddMenuEntry("200", 1000);
+
+  // For the firework count
+  int explosionsMenu = glutCreateMenu(explosionsMenuProcess);
+  glutAddMenuEntry("== # Explosion 'Rings' == ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("1", 1);
+  glutAddMenuEntry("5", 5);
+  glutAddMenuEntry("10", 10);
+  glutAddMenuEntry("20", 20);
+  glutAddMenuEntry("100", 100);
+  glutAddMenuEntry("1000", 1000);
+  glutAddMenuEntry("10000", 10000);
+
+  // For the firework count
+  int fireworkMenu = glutCreateMenu(fireworkMenuProcess);
+  glutAddMenuEntry("     == # Rockets ==      ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("1", 1);
+  glutAddMenuEntry("5", 5);
+  glutAddMenuEntry("10", 10);
+  glutAddMenuEntry("20", 20);
+  glutAddMenuEntry("100", 100);
+  glutAddMenuEntry("1000", 1000);
+  glutAddMenuEntry("10000", 10000);
+
+  // For the emitter count
+  int emittersMenu = glutCreateMenu(emitterMenuProcess);
+  glutAddMenuEntry("      == Emitters ==      ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("1", 1);
+  glutAddMenuEntry("2", 2);
+  glutAddMenuEntry("5", 5);
+  glutAddMenuEntry("10", 10);
+  glutAddMenuEntry("20", 20);
+  glutAddMenuEntry("50", 50);
+
+  // For the settings menu
+  int settingsMenu = glutCreateMenu(settingsMenuProcess);
+  glutAddMenuEntry("      == Settings ==      ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddSubMenu("# Emitters", emittersMenu);
+  glutAddSubMenu("# Rockets", fireworkMenu);
+  glutAddSubMenu("# Explosion Particles", explosionsMenu);
+  glutAddSubMenu("Min Rocket Height", minFireworkHeightMenu);
+  glutAddSubMenu("Max Rocket Height", maxFireworkHeightMenu);
+  glutAddSubMenu("Explosion Pressure", explosionPressureMenu);
+  glutAddSubMenu("Gravity Coefficient", gravityStengthMenu);
+
+  // For the main menu
+  glutCreateMenu(menu);
+  glutAddMenuEntry(" == Firework Simulator == ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("Start Simulation", 1);
+  glutAddSubMenu("Settings", settingsMenu);
+  glutAddMenuEntry("Quit", 10);
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
 void initMenus() {
   glClearColor(0.0, 0.0, 0.0, 0.0);
 
-  glutCreateMenu(menu);
-
-  glutAddMenuEntry("Bees", 1);
-  glutAddMenuEntry("Fireworks", 2);
-  glutAddMenuEntry("Attractors", 3);
-  glutAddMenuEntry("Blackhold", 4);
-  glutAddMenuEntry("", 999);
-  glutAddMenuEntry("Quit", 10);
-
-  glutAttachMenu(GLUT_RIGHT_BUTTON);
+  initMainMenu();
 
   glEnable(GL_DEPTH_TEST);
 }
