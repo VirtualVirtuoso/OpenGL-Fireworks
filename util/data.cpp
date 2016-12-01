@@ -28,6 +28,7 @@ int AXIS_SIZE = 200;
 int axisEnabled = 1;
 int numParticles = 0;
 int mode = 0; // 0 -- bees, 1 -- fireworks, 2 --
+int particleType = 1;
 
 // Trick GLUT into thinking we're working in C, not C++
 char fakeParam[] = "fake";

@@ -1,93 +1,4 @@
-/*
-|--------------------------------------------------------------------------
-| Create the camera controls
-|--------------------------------------------------------------------------
-|
-| Being able to see around the scene is essential for being able to both
-| admire and debug the scene, when things go wrong.
-*/
-
-GLdouble lat, lon;                  /* View angles (degrees) */
-GLdouble mouseLat, mouseLon;        /* Mouse look offset angles */
-GLfloat  eyeX, eyeY, eyeZ;          /* Eye point */
-GLfloat  centerX, centerY, centerZ; /* Look point */
-GLfloat  upX, upY, upZ;             /* View up vector */
-
-void initCamera() {
-  eyeX = 250;
-  eyeY = 100;
-  eyeZ = 250;
-
-  upX = 0.0;
-  upY = 1.0;
-  upZ = 0.0;
-
-  lat = 1.71;
-  lon = -138.1;
-
-  mouseLat = 0.0;
-  mouseLon = 0.0;
-}
-
-void calculateLookpoint() {
-  GLfloat dirX = cos(lat * DEG_TO_RAD) * sin(lon * DEG_TO_RAD);
-  GLfloat dirY = sin(lat * DEG_TO_RAD);
-  GLfloat dirZ = cos(lat * DEG_TO_RAD) * cos(lon * DEG_TO_RAD);
-  centerX = eyeX + dirX;
-  centerY = eyeY + dirY;
-  centerZ = eyeZ + dirZ;
-}
-
-void mouseMotion(int x, int y) {
-  if(lat > 89){
-    lat = lat - 10;
-  }
-  if(lat < -89){
-    lat = lat + 10;
-  }
-  lon += (-(((double)x / ((double)width / 100)) - 50))/50;
-  lat += (-(((double)y / ((double)height / 100)) - 50))/50;
-}
-
-void keyboard(unsigned char key, int x, int y) {
-  switch (key) {
-    case 27: // ESC
-      exit(0);
-    case 119: // W
-      eyeX += CAMERA_SPEED * sin(DEG_TO_RAD * lon);
-      eyeZ += CAMERA_SPEED * cos(DEG_TO_RAD * lon);
-      break;
-    case 115: // S
-        eyeX += -CAMERA_SPEED * sin(DEG_TO_RAD * lon);
-        eyeZ += -CAMERA_SPEED * cos(DEG_TO_RAD * lon);
-        break;
-    case 97: // A
-        eyeX += CAMERA_SPEED * sin((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
-        eyeZ += CAMERA_SPEED * cos((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
-        break;
-    case 100: // D
-        eyeX += -CAMERA_SPEED * sin((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
-        eyeZ += -CAMERA_SPEED * cos((DEG_TO_RAD * lon)+(DEG_TO_RAD * 90));
-        break;
-    case 113: // Q
-        eyeY += CAMERA_SPEED;
-        break;
-    case 101: // E
-        eyeY += -CAMERA_SPEED;
-        break;
-    }
-}
-
-void display() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glLoadIdentity();
-  calculateLookpoint();
-  gluLookAt(eyeX, eyeY, eyeZ,
-            centerX, centerY, centerZ,
-            upX, upY, upZ);
-  if(axisEnabled) glCallList(axisList);
-
-}
+#include "camera.cpp"
 
 /*
 |--------------------------------------------------------------------------
@@ -101,7 +12,7 @@ void display() {
 | appear
 */
 
-void menu(int menuEntry) {
+void menuProcess(int menuEntry) {
   switch(menuEntry) {
     case 1:
       cout << "Fireworks..." << endl;
@@ -120,21 +31,7 @@ void menu(int menuEntry) {
   }
 }
 
-void settingsMenuProcess(int menuEntry) {
-  switch(menuEntry) {
-    case 1:
-      cout << "Option 1" << endl;
-      break;
-    case 2:
-      cout << "Option 2" << endl;
-      break;
-    case 3:
-      cout << "Option 3" << endl;
-      break;
-    default:
-      break;
-  }
-}
+void settingsMenuProcess(int menuEntry) {}
 
 void explosionPressureMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
@@ -203,6 +100,19 @@ void gravityStengthMenuProcess(int menuEntry) {
        << "% to: " << gravitationalFactor * 100 << "%" << endl;
 }
 
+void printVariables(){
+  cout << endl;
+  cout << "[Info] Printing the parameters set..." << endl;
+  cout << "[Info] Number of emitters: " << numEmitters << endl;
+  cout << "[Info] Max Number of rockets: " << maxRockets << endl;
+  cout << "[Info] Number of rings per explosion: " << explosionParticleFactor << endl;
+  cout << "[Info] Minimum rocket height: " << minRocketLifetime << endl;
+  cout << "[Info] Maximum rocket height: " << maxRocketLifetime << endl;
+  cout << "[Info] Explosion Pressure: " << explosionPressure << endl;
+  cout << "[Info] Gravity coefficient: " << gravitationalFactor << endl;
+  cout << endl;
+}
+
 void utilMenuProcess(int menuEntry){
   if(menuEntry == 999) {
     return;
@@ -210,16 +120,7 @@ void utilMenuProcess(int menuEntry){
 
   switch(menuEntry) {
     case 1:
-        cout << endl;
-        cout << "[Info] Printing the parameters set..." << endl;
-        cout << "[Info] Number of emitters: " << numEmitters << endl;
-        cout << "[Info] Max Number of rockets: " << maxRockets << endl;
-        cout << "[Info] Number of rings per explosion: " << explosionParticleFactor << endl;
-        cout << "[Info] Minimum rocket height: " << minRocketLifetime << endl;
-        cout << "[Info] Maximum rocket height: " << maxRocketLifetime << endl;
-        cout << "[Info] Explosion Pressure: " << explosionPressure << endl;
-        cout << "[Info] Gravity coefficient: " << gravitationalFactor << endl;
-        cout << endl;
+      printVariables();
       break;
     case 2:
       cout << endl;
@@ -233,6 +134,83 @@ void utilMenuProcess(int menuEntry){
            << rockets.size() + explosions.size() + grassSet.size() + emitterSet.size()
            << endl;
       cout << endl;
+      break;
+    default:
+      break;
+  }
+}
+
+void setVariables(int thisR, int thisEPa, int thisMin,
+                  int thisMax, int thisEPr, int thisG) {
+  maxRockets = thisR;
+  explosionParticleFactor = thisEPa;
+  minRocketLifetime = thisMin;
+  maxRocketLifetime = thisMax;
+  explosionPressure = thisEPr;
+  gravitationalFactor = thisG;
+}
+
+void scenarioMenuProcess(int menuEntry){
+  if(menuEntry == 999) {
+    return;
+  }
+
+  rockets.clear();
+  explosions.clear();
+  numRockets = 0;
+
+  cout << endl;
+
+  switch(menuEntry) {
+    case 1:
+      cout << "[Scenario] Loading energy circle..." << endl;
+      setVariables(5000, 0, 500, 100, 50, 1);
+      cout << endl;
+      printVariables();
+      break;
+    case 2:
+      cout << "[Scenario] Loading 3-Dimensional hyperdrive..." << endl;
+      setVariables(5000, 2, 500, 1000, 50, 1);
+      printVariables();
+      break;
+    case 3:
+      cout << "[Scenario] Loading the death of a star..." << endl;
+      setVariables(5000, 5, 500, 1000, 50, 1);
+      printVariables();
+      break;
+    case 4:
+      cout << "[Scenario] Loading splatty fireworks..." << endl;
+      setVariables(20, 20, 100, 500, 5, 5);
+      printVariables();
+      break;
+    case 5:
+      cout << "[Scenario] Splatting the GPU with 85,000 particles ..." << endl;
+      setVariables(30, 30, 500, 300, 50, 5);
+      printVariables();
+      break;
+    default:
+      break;
+  }
+
+}
+
+void particleTypeMenuProcess(int menuEntry){
+  if (menuEntry == 999) {
+    return;
+  }
+
+  switch(menuEntry) {
+    case 1:
+      cout << "[Particle] Now using points..." << endl;
+      particleType = 1;
+      break;
+    case 2:
+      cout << "[Particle] Now using quads..." << endl;
+      particleType = 2;
+      break;
+    case 3:
+      cout << "[Particle] Now using trails..." << endl;
+      particleType = 3;
       break;
     default:
       break;
@@ -331,10 +309,18 @@ void initMainMenu() {
   glutAddMenuEntry("20", 20);
   glutAddMenuEntry("50", 50);
 
+  int particleTypeMenu = glutCreateMenu(particleTypeMenuProcess);
+  glutAddMenuEntry("      == Particles ==      ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("Point", 1);
+  glutAddMenuEntry("Quad", 2);
+  glutAddMenuEntry("Trail", 3);
+
   // For the settings menu
   int settingsMenu = glutCreateMenu(settingsMenuProcess);
   glutAddMenuEntry("      == Settings ==      ", 999);
   glutAddMenuEntry("", 999);
+  glutAddSubMenu("Particle Type", particleTypeMenu);
   glutAddSubMenu("# Emitters", emittersMenu);
   glutAddSubMenu("# Rockets", fireworkMenu);
   glutAddSubMenu("# Explosion Particles", explosionsMenu);
@@ -343,18 +329,28 @@ void initMainMenu() {
   glutAddSubMenu("Explosion Pressure", explosionPressureMenu);
   glutAddSubMenu("Gravity Coefficient", gravityStengthMenu);
 
+  int scenariosMenu = glutCreateMenu(scenarioMenuProcess);
+  glutAddMenuEntry("      == Scenarios ==      ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("Energy Circle", 1);
+  glutAddMenuEntry("3 Dimensional Hyperdrive", 2);
+  glutAddMenuEntry("Death of a star", 3);
+  glutAddMenuEntry("Splatty fireworks", 4);
+  glutAddMenuEntry("Let's crash the GPU", 5);
+
   int utilMenu = glutCreateMenu(utilMenuProcess);
-  glutAddMenuEntry("      == Util ==      ", 999);
+  glutAddMenuEntry("        == Util ==        ", 999);
   glutAddMenuEntry("", 999);
   glutAddMenuEntry("Print coefficients", 1);
   glutAddMenuEntry("Print #particles", 2);
 
   // For the main menu
-  glutCreateMenu(menu);
+  glutCreateMenu(menuProcess);
   glutAddMenuEntry(" == Firework Simulator == ", 999);
   glutAddMenuEntry("", 999);
   glutAddMenuEntry("Start Simulation", 1);
   glutAddSubMenu("Settings", settingsMenu);
+  glutAddSubMenu("Scenarios", scenariosMenu);
   glutAddSubMenu("Util", utilMenu);
   glutAddMenuEntry("Quit", 10);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
