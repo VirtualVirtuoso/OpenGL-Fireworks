@@ -15,17 +15,17 @@
 #define CAMERA_SPEED           10
 #define TURN_ANGLE             4.0
 #define NUMBER_EMITTERS        20
-#define MAX_ROCKETS            10
 #define GRAVITATIONAL_CONSTANT 9.81
 #define PI                     3.14159
-#define STEPS                  20
 #define SCALE_FACTOR           4000
 
 GLuint axisList;
 GLint width= 1200, height= 800; // Size of initial screen
 
-int AXIS_SIZE= 200;
-int axisEnabled= 1;
+int gravitationalFactor = 1.00;
+int explosionPressure = 1.00;
+int AXIS_SIZE = 200;
+int axisEnabled = 1;
 int numParticles = 0;
 int mode = 0; // 0 -- bees, 1 -- fireworks, 2 --
 
@@ -55,11 +55,14 @@ vector<particle> explosions;
 
 // Firework specific variables which will be changed
 int numRockets = 0;
+int maxRockets = 20;
 int minRocketLifetime = 500;
 int maxRocketLifetime = 1000;
 int fireworkRadius = 20;
 int explodeLifetime = 400;
 int rocketLaunchCone = 5;
+int numEmitters = 20;
+int explosionParticleFactor = 20;
 
 // Each of the colours which have been defined for the fireworks
 // Red, orange, yellow, green, blue, purple, pink

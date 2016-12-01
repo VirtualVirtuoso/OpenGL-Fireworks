@@ -50,7 +50,7 @@ int getRocketLifetime(){
 }
 
 void createFireworkStream() {
-  if(numRockets < MAX_ROCKETS) {
+  if(numRockets < maxRockets) {
     GLint emitterNum = getRandomEmitter();
     emitterSet[emitterNum].lifetime = emitterSet[emitterNum].maxLifetime;
     particle emitter = emitterSet[emitterNum];
@@ -85,15 +85,20 @@ void createExplode(particle origin)  {
   GLfloat green = (float)coloursGreen[random];
   GLfloat blue = (float)coloursBlue[random];
 
-  for(float theta = 0.0; theta < PI*2; theta += PI/STEPS) {
+  for(float theta = 0.0; theta < PI*2; theta += PI/explosionParticleFactor) {
 
-    for(float omega = 0.0; omega < PI*2; omega += PI/STEPS) {
+    for(float omega = 0.0; omega < PI*2; omega += PI/explosionParticleFactor) {
       GLfloat x = origin.initialX;
       GLfloat y = origin.initialY;
       GLfloat z = origin.initialZ;
       GLfloat xDirection = (((explodeLifetime + 1) /2) * cos(theta) * sin(omega)) / SCALE_FACTOR;
       GLfloat yDirection = (((explodeLifetime + 1) /2) * sin(theta) * sin(omega)) / SCALE_FACTOR;
       GLfloat zDirection = (((explodeLifetime + 1) /2) * cos(omega)) / SCALE_FACTOR;
+
+      // Now take into account the pressure defined in the menu
+      xDirection *= explosionPressure;
+      yDirection *= explosionPressure;
+      zDirection *= explosionPressure;
 
       particle newParticle = {
         x, y, z,
@@ -120,10 +125,19 @@ void drawExplode() {
       explosions.erase(explosions.begin() + i);
     } else {
       explosions[i].lifetime--;
-      explosions[i].directionY += -0.0002; // Simulate gravity
+      explosions[i].directionY += (-0.0002 * GRAVITATIONAL_CONSTANT * gravitationalFactor); // Simulate gravity
       explosions[i].initialX += explosions[i].directionX;
-      explosions[i].initialY += explosions[i].directionY;
       explosions[i].initialZ += explosions[i].directionZ;
+
+      // Simulate hitting the grass field
+      if(explosions[i].initialY >= 5) {
+        explosions[i].initialY += explosions[i].directionY;
+      } else {
+        if((explosions[i].initialX < 0 || explosions[i].initialX > 200) ||
+           (explosions[i].initialZ < 0 || explosions[i].initialZ > 200)) {
+             explosions[i].initialY += explosions[i].directionY;
+        }
+      }
 
       if(explosions[i].maxLifetime == 0) {
         explosions[i].maxLifetime = 1;

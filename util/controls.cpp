@@ -136,18 +136,24 @@ void settingsMenuProcess(int menuEntry) {
   }
 }
 
-void explosionsMenuProcess(int menuEntry) {
+void explosionPressureMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
     return;
   }
-  cout << menuEntry << endl;
+  GLfloat oldPressure = explosionPressure;
+  explosionPressure = (float)menuEntry / 100.0;
+  cout << "[Setting] Explosion pressure changed from: " << oldPressure * 100
+       << "% to: " << explosionPressure * 100 << "%" << endl;
 }
 
 void fireworkMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
     return;
   }
-  cout << menuEntry << endl;
+  int oldRockets = maxRockets;
+  maxRockets = menuEntry;
+  cout << "[Setting] Max Rockets changed from: " << oldRockets
+       << " to: " << maxRockets << endl;
 }
 
 void emitterMenuProcess(int menuEntry) {
@@ -161,28 +167,40 @@ void maxFireworkHeightMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
     return;
   }
-  cout << menuEntry << endl;
+  int oldHeight = maxRocketLifetime;
+  maxRocketLifetime = menuEntry;
+  cout << "[Setting] Max Firework Height changed from: " << oldHeight
+       << " to: " << maxRocketLifetime << endl;
 }
 
 void minFireworkHeightMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
     return;
   }
-  cout << menuEntry << endl;
+  int oldHeight = minRocketLifetime;
+  minRocketLifetime = menuEntry;
+  cout << "[Setting] Min Firework Height changed from: " << oldHeight
+       << " to: " << minRocketLifetime << endl;
 }
 
-void explosionPressureMenuProcess(int menuEntry) {
+void explosionsMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
     return;
   }
-  cout << (float)menuEntry/100.0 << endl;
+  int oldExplosionCount = explosionParticleFactor;
+  explosionParticleFactor = menuEntry;
+  cout << "[Setting] Explosion Particle Count Factor changed from: " << oldExplosionCount
+       << " to: " << explosionParticleFactor << endl;
 }
 
 void gravityStengthMenuProcess(int menuEntry) {
   if(menuEntry == 999) {
     return;
   }
-  cout << (float)menuEntry/100.0 << endl;
+  GLfloat oldGravity = gravitationalFactor;
+  gravitationalFactor = (float)menuEntry / 100.0;
+  cout << "[Setting] Gravitational Force changed from: " << oldGravity * 100
+       << "% to: " << gravitationalFactor * 100 << "%" << endl;
 }
 
 void initMainMenu() {
@@ -210,41 +228,42 @@ void initMainMenu() {
   glutAddMenuEntry("150%", 150);
   glutAddMenuEntry("200%", 200);
   glutAddMenuEntry("500%", 500);
+  glutAddMenuEntry("1000%", 1000);
 
   // For the max firework height
   int maxFireworkHeightMenu = glutCreateMenu(maxFireworkHeightMenuProcess);
   glutAddMenuEntry("== Max Firework Height == ", 999);
   glutAddMenuEntry("", 999);
-  glutAddMenuEntry("200", 200);
-  glutAddMenuEntry("205", 205);
-  glutAddMenuEntry("210", 210);
-  glutAddMenuEntry("220", 220);
-  glutAddMenuEntry("300", 300);
   glutAddMenuEntry("500", 500);
+  glutAddMenuEntry("600", 600);
+  glutAddMenuEntry("750", 750);
   glutAddMenuEntry("1000", 1000);
+  glutAddMenuEntry("1250", 1250);
+  glutAddMenuEntry("1500", 1500);
+  glutAddMenuEntry("2000", 2000);
 
   // For the min firework height
   int minFireworkHeightMenu = glutCreateMenu(minFireworkHeightMenuProcess);
   glutAddMenuEntry("== Min Firework Height == ", 999);
   glutAddMenuEntry("", 999);
-  glutAddMenuEntry("1", 1);
-  glutAddMenuEntry("5", 5);
+  glutAddMenuEntry("0", 0);
   glutAddMenuEntry("10", 10);
-  glutAddMenuEntry("20", 20);
+  glutAddMenuEntry("50", 50);
   glutAddMenuEntry("100", 100);
-  glutAddMenuEntry("200", 1000);
+  glutAddMenuEntry("200", 200);
+  glutAddMenuEntry("500", 500);
 
   // For the firework count
   int explosionsMenu = glutCreateMenu(explosionsMenuProcess);
   glutAddMenuEntry("== # Explosion 'Rings' == ", 999);
   glutAddMenuEntry("", 999);
   glutAddMenuEntry("1", 1);
+  glutAddMenuEntry("2", 2);
   glutAddMenuEntry("5", 5);
   glutAddMenuEntry("10", 10);
   glutAddMenuEntry("20", 20);
-  glutAddMenuEntry("100", 100);
-  glutAddMenuEntry("1000", 1000);
-  glutAddMenuEntry("10000", 10000);
+  glutAddMenuEntry("30", 30);
+  glutAddMenuEntry("50", 50);
 
   // For the firework count
   int fireworkMenu = glutCreateMenu(fireworkMenuProcess);
@@ -254,9 +273,10 @@ void initMainMenu() {
   glutAddMenuEntry("5", 5);
   glutAddMenuEntry("10", 10);
   glutAddMenuEntry("20", 20);
+  glutAddMenuEntry("50*", 50);
   glutAddMenuEntry("100", 100);
-  glutAddMenuEntry("1000", 1000);
-  glutAddMenuEntry("10000", 10000);
+  glutAddMenuEntry("200", 200);
+  glutAddMenuEntry("500", 500);
 
   // For the emitter count
   int emittersMenu = glutCreateMenu(emitterMenuProcess);

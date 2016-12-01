@@ -44,9 +44,9 @@ void initGrass(){
 
 void initEmitters(){
 
-  for(unsigned int i = 1; i < NUMBER_EMITTERS; i++) {
-      GLfloat x = 100 + (50 * cos(i));
-      GLfloat z = 100 + (50 * sin(i));
+  for(float theta = 0.0; theta < PI*2; theta += PI/numEmitters) {
+      GLfloat x = 100 + (50 * cos(theta));
+      GLfloat z = 100 + (50 * sin(theta));
 
       particle newParticle = {
         x, 2, z,
