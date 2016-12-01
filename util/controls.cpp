@@ -203,6 +203,42 @@ void gravityStengthMenuProcess(int menuEntry) {
        << "% to: " << gravitationalFactor * 100 << "%" << endl;
 }
 
+void utilMenuProcess(int menuEntry){
+  if(menuEntry == 999) {
+    return;
+  }
+
+  switch(menuEntry) {
+    case 1:
+        cout << endl;
+        cout << "[Info] Printing the parameters set..." << endl;
+        cout << "[Info] Number of emitters: " << numEmitters << endl;
+        cout << "[Info] Max Number of rockets: " << maxRockets << endl;
+        cout << "[Info] Number of rings per explosion: " << explosionParticleFactor << endl;
+        cout << "[Info] Minimum rocket height: " << minRocketLifetime << endl;
+        cout << "[Info] Maximum rocket height: " << maxRocketLifetime << endl;
+        cout << "[Info] Explosion Pressure: " << explosionPressure << endl;
+        cout << "[Info] Gravity coefficient: " << gravitationalFactor << endl;
+        cout << endl;
+      break;
+    case 2:
+      cout << endl;
+      cout << "[Info] Printing a description of the scene..." << endl;
+      cout << "[Info] Number of rockets: " << rockets.size() << endl;
+      cout << "[Info] Number of explosion particles: " << explosions.size() << endl;
+      cout << "[Info] Number of grass particles: " << grassSet.size() << endl;
+      cout << "[Info] Number of emitters: " << emitterSet.size() << endl;
+
+      cout << "[Info] Current number of particles rendered: "
+           << rockets.size() + explosions.size() + grassSet.size() + emitterSet.size()
+           << endl;
+      cout << endl;
+      break;
+    default:
+      break;
+  }
+}
+
 void initMainMenu() {
 
   // For the explosion pressure
@@ -229,6 +265,8 @@ void initMainMenu() {
   glutAddMenuEntry("200%", 200);
   glutAddMenuEntry("500%", 500);
   glutAddMenuEntry("1000%", 1000);
+  glutAddMenuEntry("2000%", 2000);
+  glutAddMenuEntry("5000%", 5000);
 
   // For the max firework height
   int maxFireworkHeightMenu = glutCreateMenu(maxFireworkHeightMenuProcess);
@@ -257,6 +295,7 @@ void initMainMenu() {
   int explosionsMenu = glutCreateMenu(explosionsMenuProcess);
   glutAddMenuEntry("== # Explosion 'Rings' == ", 999);
   glutAddMenuEntry("", 999);
+  glutAddMenuEntry("0", 0);
   glutAddMenuEntry("1", 1);
   glutAddMenuEntry("2", 2);
   glutAddMenuEntry("5", 5);
@@ -277,6 +316,9 @@ void initMainMenu() {
   glutAddMenuEntry("100", 100);
   glutAddMenuEntry("200", 200);
   glutAddMenuEntry("500", 500);
+  glutAddMenuEntry("1000", 1000);
+  glutAddMenuEntry("2000", 2000);
+  glutAddMenuEntry("5000", 5000);
 
   // For the emitter count
   int emittersMenu = glutCreateMenu(emitterMenuProcess);
@@ -301,12 +343,19 @@ void initMainMenu() {
   glutAddSubMenu("Explosion Pressure", explosionPressureMenu);
   glutAddSubMenu("Gravity Coefficient", gravityStengthMenu);
 
+  int utilMenu = glutCreateMenu(utilMenuProcess);
+  glutAddMenuEntry("      == Util ==      ", 999);
+  glutAddMenuEntry("", 999);
+  glutAddMenuEntry("Print coefficients", 1);
+  glutAddMenuEntry("Print #particles", 2);
+
   // For the main menu
   glutCreateMenu(menu);
   glutAddMenuEntry(" == Firework Simulator == ", 999);
   glutAddMenuEntry("", 999);
   glutAddMenuEntry("Start Simulation", 1);
   glutAddSubMenu("Settings", settingsMenu);
+  glutAddSubMenu("Util", utilMenu);
   glutAddMenuEntry("Quit", 10);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 }

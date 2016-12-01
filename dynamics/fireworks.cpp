@@ -78,6 +78,10 @@ void createFireworkStream() {
 
 void createExplode(particle origin)  {
 
+  if(explosionParticleFactor == 0) {
+    return;
+  }
+
   int min = 0;
   int max = (sizeof(coloursRed)/sizeof(*coloursRed)) - 1;
   int random = min + (rand() % (int)(max - min + 1));
@@ -120,12 +124,17 @@ void createExplode(particle origin)  {
 
 void drawExplode() {
   glBegin(GL_POINTS);
+
+  if(explosions.size() == 0) {
+    return;
+  }
+
   for(unsigned int i = 0; i < explosions.size(); i++) {
     if(explosions[i].lifetime == 0) {
       explosions.erase(explosions.begin() + i);
     } else {
       explosions[i].lifetime--;
-      explosions[i].directionY += (-0.0002 * GRAVITATIONAL_CONSTANT * gravitationalFactor); // Simulate gravity
+      explosions[i].directionY += (-0.00005 * GRAVITATIONAL_CONSTANT * gravitationalFactor); // Simulate gravity
       explosions[i].initialX += explosions[i].directionX;
       explosions[i].initialZ += explosions[i].directionZ;
 
