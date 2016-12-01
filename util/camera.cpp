@@ -9,7 +9,6 @@
 
 GLdouble lat, lon;                  /* View angles (degrees) */
 GLdouble mouseLat, mouseLon;        /* Mouse look offset angles */
-GLfloat  eyeX, eyeY, eyeZ;          /* Eye point */
 GLfloat  centerX, centerY, centerZ; /* Look point */
 GLfloat  upX, upY, upZ;             /* View up vector */
 

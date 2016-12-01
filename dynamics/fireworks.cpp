@@ -122,11 +122,58 @@ void createExplode(particle origin)  {
   }
 }
 
+GLfloat findLargest(GLfloat x, GLfloat y, GLfloat z) {
+    if((x >= y) && (x >= z))
+        return x;
+    else if ((y >= x) && (y >= z))
+        return y;
+    else
+        return z;
+}
+
+void drawQuadExplode(particle point) {
+  GLfloat xDiff = eyeX - point.initialX;
+  GLfloat yDiff = eyeY - point.initialY;
+  GLfloat zDiff = eyeZ - point.initialZ;
+  GLfloat max = findLargest(xDiff, yDiff, zDiff);
+
+  GLfloat xNorm = xDiff / max;
+  GLfloat yNorm = yDiff / max;
+  GLfloat zNorm = zDiff / max;
+
+  GLfloat sizeOfQuad = 2.0;
+
+  GLfloat xOrth1 = yNorm * sizeOfQuad;
+  GLfloat xOrth2 = zNorm * sizeOfQuad;
+  GLfloat yOrth1 = xNorm * sizeOfQuad;
+  GLfloat yOrth2 = zNorm * sizeOfQuad;
+  GLfloat zOrth1 = xNorm * sizeOfQuad;
+  GLfloat zOrth2 = yNorm * sizeOfQuad;
+
+  glColor4f(point.r/255, point.g/255, point.b/255, point.opacity);
+  glVertex3f(point.initialX + xOrth1, point.initialY + yOrth1, point.initialZ + zOrth1);
+  glVertex3f(point.initialX + xOrth2, point.initialY + yOrth2, point.initialZ + zOrth2);
+  glVertex3f(point.initialX - xOrth1, point.initialY - yOrth1, point.initialZ - zOrth1);
+  glVertex3f(point.initialX - xOrth2, point.initialY - yOrth2, point.initialZ - zOrth2);
+
+  // cout << xNorm << " " << yNorm << " " << zNorm << " max: " << max << endl;
+}
+
+void drawPointExplode(particle point) {
+  glColor4f(point.r/255, point.g/255, point.b/255, point.opacity);
+  glVertex3f(point.initialX, point.initialY, point.initialZ);
+}
+
 void drawExplode() {
-  glBegin(GL_POINTS);
 
   if(explosions.size() == 0) {
     return;
+  }
+
+  if(particleType == 1) {
+    glBegin(GL_POINTS);
+  } else {
+    glBegin(GL_QUADS);
   }
 
   for(unsigned int i = 0; i < explosions.size(); i++) {
@@ -154,11 +201,11 @@ void drawExplode() {
 
       explosions[i].opacity = ((float)explosions[i].lifetime / (float)explosions[i].maxLifetime);
 
-      glColor4f(explosions[i].r/255, explosions[i].g/255, explosions[i].b/255,
-        explosions[i].opacity);
-      glVertex3f(explosions[i].initialX,
-        explosions[i].initialY,
-        explosions[i].initialZ);
+      if(particleType == 1) {
+        drawPointExplode(explosions[i]);
+      } else {
+        drawQuadExplode(explosions[i]);
+      }
     }
   }
   glEnd();

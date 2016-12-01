@@ -19,6 +19,9 @@
 #define PI                     3.14159
 #define SCALE_FACTOR           4000
 
+// Camera position
+GLfloat  eyeX, eyeY, eyeZ;          /* Eye point */
+
 GLuint axisList;
 GLint width= 1200, height= 800; // Size of initial screen
 
