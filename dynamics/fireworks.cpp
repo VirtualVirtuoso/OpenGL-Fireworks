@@ -159,9 +159,31 @@ void drawQuadExplode(particle point) {
   // cout << xNorm << " " << yNorm << " " << zNorm << " max: " << max << endl;
 }
 
+
+void drawTrailExplode(particle point) {
+  GLfloat lineFactor = 10.0;
+  GLfloat previousDirectionX = point.directionX * lineFactor;
+  GLfloat previousDirectionY = point.directionY * lineFactor;
+  GLfloat previousDirectionZ = point.directionZ * lineFactor;
+
+  GLfloat previousX = point.initialX - previousDirectionX;
+  GLfloat previousY = point.initialY - previousDirectionY;
+  GLfloat previousZ = point.initialZ - previousDirectionZ;
+
+  glLineWidth(2.5);
+  glColor4f(point.r/255, point.g/255, point.b/255, point.opacity);
+
+  glBegin(GL_LINES);
+    glVertex3f(previousX, previousY, previousZ);
+    glVertex3f(point.initialX, point.initialY, point.initialZ);
+  glEnd();
+}
+
 void drawPointExplode(particle point) {
+
   glColor4f(point.r/255, point.g/255, point.b/255, point.opacity);
   glVertex3f(point.initialX, point.initialY, point.initialZ);
+
 }
 
 void drawExplode() {
@@ -170,10 +192,18 @@ void drawExplode() {
     return;
   }
 
-  if(particleType == 1) {
-    glBegin(GL_POINTS);
-  } else {
-    glBegin(GL_QUADS);
+  switch(particleType) {
+    case 1:
+      glBegin(GL_POINTS);
+      break;
+    case 2:
+      glBegin(GL_QUADS);
+      break;
+    case 3:
+      break;
+    default:
+      glBegin(GL_POINTS);
+      break;
   }
 
   for(unsigned int i = 0; i < explosions.size(); i++) {
@@ -201,14 +231,26 @@ void drawExplode() {
 
       explosions[i].opacity = ((float)explosions[i].lifetime / (float)explosions[i].maxLifetime);
 
-      if(particleType == 1) {
-        drawPointExplode(explosions[i]);
-      } else {
-        drawQuadExplode(explosions[i]);
+      switch(particleType) {
+        case 1:
+          drawPointExplode(explosions[i]);
+          break;
+        case 2:
+          drawQuadExplode(explosions[i]);
+          break;
+        case 3:
+          drawTrailExplode(explosions[i]);
+          break;
+        default:
+          drawPointExplode(explosions[i]);
+          break;
       }
     }
   }
-  glEnd();
+  if(particleType != 3) {
+    glEnd();
+  }
+
 }
 
 void drawFireworkStream() {
